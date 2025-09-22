@@ -1,6 +1,7 @@
 package br.com.sustentavel.api_sustentavel.service;
 
 import br.com.sustentavel.api_sustentavel.dto.AcaoSustentavelRequest;
+import br.com.sustentavel.api_sustentavel.enums.CategoriaAcao;
 import br.com.sustentavel.api_sustentavel.model.AcaoSustentavel;
 import br.com.sustentavel.api_sustentavel.repository.AcaoSustentavelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,15 @@ public class AcaoSustentavelService {
         return repository.findAll();
     }
 
+    public List<AcaoSustentavel> listarPorCategoria(CategoriaAcao categoria) {
+        return repository.findByCategoria(categoria);
+    }
+
+    public AcaoSustentavel buscarPorId(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Ação sustentável não encontrada com o ID: " + id));
+    }
+
     public AcaoSustentavel salvar(AcaoSustentavelRequest requestDTO) {
         AcaoSustentavel novaAcao = new AcaoSustentavel();
         novaAcao.setTitulo(requestDTO.getTitulo());
@@ -27,13 +37,8 @@ public class AcaoSustentavelService {
         return repository.save(novaAcao);
     }
 
-    public AcaoSustentavel buscarPorId(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Ação sustentável não encontrada com o ID: " + id));
-    }
-
     public AcaoSustentavel atualizar(Long id, AcaoSustentavelRequest requestDTO) {
-        AcaoSustentavel acaoExistente = buscarPorId(id);
+        AcaoSustentavel acaoExistente = buscarPorId(id); // Reutiliza a busca e a exceção
 
         acaoExistente.setTitulo(requestDTO.getTitulo());
         acaoExistente.setDescricao(requestDTO.getDescricao());
